@@ -30,7 +30,7 @@ class CitationsController extends Controller
      *
      * @var string
      */
-    protected $pubMetaKey = "published";
+    protected $pubMetaKey = "published_metadata";
 
     /**
      * This is the key of the author membership sub-object that may appear
@@ -131,6 +131,14 @@ class CitationsController extends Controller
                     $q->whereNull('user_id');
                 }
             });
+        }
+
+        // if we have a provided "recent" size (limit number of records to the
+        // most recent X citations) then apply that
+        if($request->has('recent')) {
+            $count = $request->input('recent');
+            $citations = $citations->orderBy('id', 'DESC')
+                ->take($count);
         }
 
         // generate the response and send everything back
